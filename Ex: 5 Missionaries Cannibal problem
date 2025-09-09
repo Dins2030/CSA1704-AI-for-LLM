@@ -1,0 +1,68 @@
+from collections import deque
+
+# State is represented as (missionaries_left, cannibals_left, boat_position)
+# boat_position: 0 = left bank, 1 = right bank
+
+def is_valid(state):
+  m_left, c_left, _ = state
+  m_right = 3 - m_left
+  c_right = 3 - c_left
+
+  # Missionaries should never be outnumbered by cannibals
+  if (m_left > 0 and m_left < c_left) or (m_right > 0 and m_right < c_right):
+    return False
+  # Valid if counts are within range
+  if 0 <= m_left <= 3 and 0 <= c_left <= 3:
+    return True
+  return False
+
+def print_solution(path):
+  print("Solution Steps:")
+  for step in path:
+    print(f"Left Bank -> Missionaries: {step[0]}, Cannibals: {step[1]}, Boat: {'Left' if step[2] == 0 else 'Right'}")
+  print()
+
+def missionaries_cannibals_solver():
+  initial_state = (3, 3, 0)  # Start with all on the left bank
+  goal_state = (0, 0, 1)     # Goal: all on the right bank
+
+  queue = deque()
+  visited = set()
+
+  queue.append((initial_state, []))
+
+  while queue:
+    state, path = queue.popleft()
+    m_left, c_left, boat = state
+
+    # Skip if visited
+    if state in visited:
+      continue
+    visited.add(state)
+
+    new_path = path + [state]
+
+    # Check if goal is reached
+    if state == goal_state:
+      print_solution(new_path)
+      return True
+
+    # Possible moves: combinations of missionaries and cannibals in the boat (1 or 2 people)
+    for m in range(3):
+      for c in range(3):
+        if 1 <= m + c <= 2:
+          # Boat moving from left to right
+          if boat == 0:
+            new_state = (m_left - m, c_left - c, 1)
+          # Boat moving from right to left
+          else:
+            new_state = (m_left + m, c_left + c, 0)
+
+          if is_valid(new_state):
+            queue.append((new_state, new_path))
+
+  print("No solution found.")
+  return False
+
+# Run the solver
+missionaries_cannibals_solver()
