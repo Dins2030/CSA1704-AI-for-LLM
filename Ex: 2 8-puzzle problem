@@ -1,0 +1,81 @@
+from collections import deque
+
+# Define the goal state
+goal_state = [[1, 2, 3],[4, 5, 6],[7, 8, 0]]  # 0 represents the blank tile
+
+# Helper function to print the puzzle
+def print_state(state):
+    for row in state:
+        print(row)
+    print()
+
+# Helper function to find the position of zero (blank tile)
+def find_zero(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+
+# Check if current state is the goal
+def is_goal(state):
+    return state == goal_state
+
+# Generate possible moves from current state
+def get_neighbors(state):
+    neighbors = []
+    x, y = find_zero(state)
+    
+    # Possible moves: up, down, left, right
+    moves = [(-1,0), (1,0), (0,-1), (0,1)]
+    
+    for dx, dy in moves:
+        new_x, new_y = x + dx, y + dy
+        if 0 <= new_x < 3 and 0 <= new_y < 3:
+            # Copy current state to create a new state
+            new_state = [row[:] for row in state]
+            
+            # Swap blank with the adjacent tile
+            new_state[x][y], new_state[new_x][new_y] = new_state[new_x][new_y], new_state[x][y]
+            
+            neighbors.append(new_state)
+    
+    return neighbors
+
+# Solve the puzzle using BFS
+def solve_puzzle(initial_state):
+    queue = deque()
+    visited = set()
+    
+    # Store the path to print later
+    queue.append((initial_state, []))
+    
+    while queue:
+        current_state, path = queue.popleft()
+        
+        # Convert state to tuple for storing in visited set
+        state_key = tuple(sum(current_state, []))
+        
+        if state_key in visited:
+            continue
+        
+        visited.add(state_key)
+        
+        # Check if goal state is reached
+        if is_goal(current_state):
+            print("Solution found in", len(path), "moves!")
+            for step in path + [current_state]:
+                print_state(step)
+            return
+        
+        # Explore neighbors
+        for neighbor in get_neighbors(current_state):
+            queue.append((neighbor, path + [current_state]))
+    
+    print("No solution found.")
+
+# Example initial state
+initial_state = [[1, 2, 3],[4, 0, 6],[7, 5, 8]]
+
+print("Initial State:")
+print_state(initial_state)
+solve_puzzle(initial_state)
