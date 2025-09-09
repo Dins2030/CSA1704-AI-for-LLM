@@ -1,0 +1,44 @@
+import random
+
+# Possible states for locations: 'Clean' or 'Dirty'
+locations = ['A', 'B']
+
+# Initialize the environment randomly
+environment = {
+  'A': random.choice(['Clean', 'Dirty']),
+  'B': random.choice(['Clean', 'Dirty'])
+}
+
+# Vacuum starts at a random location
+vacuum_position = random.choice(['A', 'B'])
+
+def print_environment():
+  print(f"Vacuum is at location: {vacuum_position}")
+  print(f"Location A: {environment['A']}, Location B: {environment['B']}")
+  print()
+
+def vacuum_cleaner_agent():
+  global vacuum_position
+
+  steps = 0
+  print("Initial Environment:")
+  print_environment()
+
+  while environment['A'] == 'Dirty' or environment['B'] == 'Dirty':
+    steps += 1
+
+    # Clean current location if dirty
+    if environment[vacuum_position] == 'Dirty':
+      print(f"Cleaning location {vacuum_position}.")
+      environment[vacuum_position] = 'Clean'
+    else:
+      # Move to the other location
+      vacuum_position = 'B' if vacuum_position == 'A' else 'A'
+      print(f"Moving to location {vacuum_position}.")
+
+    print_environment()
+
+  print(f"All locations are clean! Total steps taken: {steps}")
+
+# Run the vacuum cleaner agent
+vacuum_cleaner_agent()
