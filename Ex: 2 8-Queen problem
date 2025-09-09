@@ -1,0 +1,63 @@
+N = 8  # Number of queens and size of the chessboard
+
+# Function to print the board
+def print_board(board):
+  for row in board:
+    line = ""
+    for cell in row:
+      line += "Q " if cell == 1 else ". "
+    print(line)
+  print()
+
+# Check if it is safe to place a queen at board[row][col]
+def is_safe(board, row, col):
+  # Check this column in upper rows
+  for i in range(row):
+    if board[i][col] == 1:
+      return False
+
+  # Check upper-left diagonal
+  i, j = row - 1, col - 1
+  while i >= 0 and j >= 0:
+    if board[i][j] == 1:
+      return False
+    i -= 1
+    j -= 1
+
+  # Check upper-right diagonal
+  i, j = row - 1, col + 1
+  while i >= 0 and j < N:
+    if board[i][j] == 1:
+      return False
+    i -= 1
+    j += 1
+
+  return True
+
+# Recursive function to solve the problem
+def solve_n_queens(board, row):
+  if row == N:
+    print("One of the solutions:")
+    print_board(board)
+    return True  # Return True to find just one solution
+
+  for col in range(N):
+    if is_safe(board, row, col):
+      board[row][col] = 1  # Place queen
+
+      # Recur to place the next queen
+      if solve_n_queens(board, row + 1):
+        return True  # Return True after finding one solution
+
+      # Backtrack
+      board[row][col] = 0
+
+  return False
+
+# Initialize empty board
+board = [[0 for _ in range(N)] for _ in range(N)]
+
+# Solve the problem
+if not solve_n_queens(board, 0):
+  print("No solution found.")
+                        
